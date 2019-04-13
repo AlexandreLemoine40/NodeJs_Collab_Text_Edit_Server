@@ -9,6 +9,9 @@ var server = http.createServer(function(req, res) {
     });
 });
 
+// Initialisation du contenu de l'éditeur
+var content = 'Quill';
+
 // Chargement de socket.io
 var io = require('socket.io').listen(server);
 
@@ -25,6 +28,13 @@ io.sockets.on('connection', function (socket) {
     // Quand on reçoit un message du client
     socket.on('message', function(message) {
         console.log(message);
+    });
+
+    // A terminer
+    // Quand un client modifie son éditeur
+    socket.on('typed', function(text,position) {
+      socket.broadcast.emit(text);
+      console.log(text);
     });
 });
 
