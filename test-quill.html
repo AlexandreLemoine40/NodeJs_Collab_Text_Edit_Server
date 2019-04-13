@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link href="style.css" rel="stylesheet">
+    <!-- Include Quill stylesheet -->
+    <link href="https://cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
+    <title>CWallCollab</title>
+  </head>
+  <body>
+
+    <!-- Create the editor container -->
+    <div id="editor-container">
+
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var userName = prompt("Quel est votre nom ?");
+
+      var socket = io.connect('http://localhost:8080');
+      socket.on('message', function(message) {
+        quill.insertText(0, message, {
+          'color': '#000000'
+        });
+      });
+
+      // On envoie le pseudo rentré dans le prompt
+      socket.emit('newClient', userName);
+
+    </script>
+    <!-- Code Javascript du client -->
+    <script src="app.js"></script>
+
+    <!-- import d'un composant de quill.js -->
+    <script src="https://cdn.quilljs.com/1.0.0/quill.js"></script>
+
+    <!-- Déclaration de l'éditeur -->
+    <script>
+      var quill = new Quill('#editor-container', {
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, false] }],
+          // Contenu de la toolbar
+          // Partie 1 de la toolbar
+          ['bold', 'italic', 'underline'],
+          // Partie 2 de la toolbar
+          ['image'],
+          // Partie 3 de la toolbar
+          ['color']
+        ]
+      },
+      placeholder: 'Compose an epic...',
+      theme: 'snow'
+    });
+
+    // Insérer le texte qu'on a reçu
+    // Ici on a utilisé un bouchon, à remplacer par l'envoie d'un message du serveur
+    quill.insertText(0, '', {
+      'color': '#000000'
+    });
+
+
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+<!-- Include the Quill library -->
+
+
+<!-- Initialize Quill editor -->
