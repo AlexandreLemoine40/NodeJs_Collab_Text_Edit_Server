@@ -2,40 +2,26 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <link href="style.css" rel="stylesheet">
+    <link href="./style.css" rel="stylesheet">
     <!-- Include Quill stylesheet -->
     <link href="https://cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
-    <title>CWallCollab</title>
+    <title>CWallCollabTextEditor</title>
   </head>
-  <body>
+  <body style="height: 100vh;">
 
     <!-- Create the editor container -->
-    <div id="editor-container">
+    <div id="editor-container" style="height: 50%;">
 
     </div>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var userName = prompt("Quel est votre nom ?");
-
-      var socket = io.connect('http://localhost:8080');
-      socket.on('message', function(message) {
-        quill.insertText(0, message, {
-          'color': '#000000'
-        });
-      });
-
-      // On envoie le pseudo rentré dans le prompt
-      socket.emit('newClient', userName);
-
-    </script>
-    <!-- Code Javascript du client -->
-    <script src="app.js"></script>
+    <button id="pourPoke">Recevoir réponse du serveur</button>
 
     <!-- import d'un composant de quill.js -->
     <script src="https://cdn.quilljs.com/1.0.0/quill.js"></script>
 
-    <!-- Déclaration de l'éditeur -->
+    <!-- import de socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- Code de la socket côté client -->
     <script>
       var quill = new Quill('#editor-container', {
       modules: {
@@ -49,19 +35,50 @@
           // Partie 3 de la toolbar
           ['color']
         ]
-      },
-      placeholder: 'Compose an epic...',
-      theme: 'snow'
-    });
+      }, placeholder: 'Compose an epic...',
+        theme: 'snow'
+      });
+      // Boite de dialogue pour récupérer le nom du client
+      var userName = prompt("Quel est votre nom ?");
 
-    // Insérer le texte qu'on a reçu
-    // Ici on a utilisé un bouchon, à remplacer par l'envoie d'un message du serveur
-    quill.insertText(0, '', {
-      'color': '#000000'
-    });
+      // Connexion au serveur via une socket
+      var socket = io.connect('http://localhost:8080');
 
+      // Code de la socket quand le client reçoit une réponse
+      // du serveur de type 'message'
+      // message du serveur -> message affiché en position 0 de l'éditeur
+      socket.on('message', function(message) {
+        quill.insertText(0, message, {
+          'color': '#000000'
+        });
+      });
+
+      socket.on('textChanged', function(text) {
+        quill.insertText(0, text, {
+          'color': '#000000'
+        });
+      });
+
+      // On envoie le pseudo rentré dans le prompt
+      socket.emit('newClient', userName);
+
+      // On attend le click sur un bouton pour déclencher le callback
+      document.getElementById("pourPoke").addEventListener("click", function(){
+        socket.emit('message','Bonjour le serveur');
+      });
+
+      // Quand on écrit dans l'éditeur
+      quill.on('editor-change', function(eventName, ...args) {
+        if (eventName === 'text-change') {
+          // args[0] will be delta
+        } else if (eventName === 'selection-change') {
+          // args[0] will be old range
+        }
+      });
 
     </script>
+    <!-- import de jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   </body>
 </html>
 

@@ -21,6 +21,11 @@ io.sockets.on('connection', function (socket) {
         socket.pseudo = pseudo;
         console.log(pseudo);
     });
+
+    // Quand on reçoit un message du client
+    socket.on('message', function(message) {
+        console.log(message);
+    });
 });
 
 
